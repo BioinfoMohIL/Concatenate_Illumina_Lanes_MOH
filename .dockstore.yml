@@ -1,5 +1,5 @@
 version: 1.2
 workflows:
  - name:Concatenate_Illumina_Lanes_MOH
-   subclass: WDL
-   primaryDescriptorPath: /concatenate_illumina_lanes.wdl
+  subclass: WDL
+  primaryDescriptorPath: /concatenate_illumina_lanes.wdl
