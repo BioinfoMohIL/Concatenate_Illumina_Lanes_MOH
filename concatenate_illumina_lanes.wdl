@@ -33,6 +33,8 @@ task fetch_reads_name {
     input {
         File read1_lane1
         File read2_lane1
+        String docker = "us-docker.pkg.dev/general-theiagen/theiagen/alpine-plus-bash:3.20.0"
+
     }
 
     command <<<
@@ -46,6 +48,10 @@ task fetch_reads_name {
     output {
         String read1_name = read_string('read1_name.txt')
         String read2_name = read_string('read2_name.txt')     
+    }
+
+    runtime {
+        docker: "~{docker}"
     }
 
 }
@@ -96,6 +102,7 @@ task cat_lanes {
     File read1_concatenated = "~{read1_name}"
     File? read2_concatenated = "~{read2_name}"
   }
+
   runtime {
     docker: "~{docker}"
     memory: memory + " GB"
