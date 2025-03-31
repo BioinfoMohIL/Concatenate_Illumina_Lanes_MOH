@@ -38,8 +38,8 @@ task fetch_reads_name {
     }
 
     command <<<
-        read1_name=$(basename "~{read1_lane1}")
-        read2_name=$(basename "~{read2_lane1}")
+        read1_name=$(basename "~{read1_lane1}" .fastq.gz)
+        read2_name=$(basename "~{read2_lane1}" .fastq.gz)
 
         echo $read1_name > read1_name.txt
         echo $read2_name > read2_name.txt
@@ -88,19 +88,19 @@ task cat_lanes {
     exists() { [[ -f $1 ]]; }
 
 
-    cat ~{read1_lane1} ~{read1_lane2} ~{read1_lane3} ~{read1_lane4} > ~{read1_name}
+    cat ~{read1_lane1} ~{read1_lane2} ~{read1_lane3} ~{read1_lane4} > "~{read1_name}.fastq.gz"
 
     if exists "~{read2_lane1}" ; then
-      cat ~{read2_lane1} ~{read2_lane2} ~{read2_lane3} ~{read2_lane4} > ~{read2_name}
+      cat ~{read2_lane1} ~{read2_lane2} ~{read2_lane3} ~{read2_lane4} > "~{read2_name}.fastq.gz"
     fi
 
     # ensure newly merged FASTQs are valid gzipped format
-    gzip -t ~{read1_name}
-    gzip -t ~{read2_name}
+    gzip -t "~{read1_name}.fastq.gz"
+    gzip -t "~{read2_name}.fastq.gz"
   >>>
   output {
-    File read1_concatenated = "~{read1_name}"
-    File? read2_concatenated = "~{read2_name}"
+    File read1_concatenated = "~{read1_name}_merged.fastq.gz"
+    File? read2_concatenated = "~{read2_name}_merged.fastq.gz"
   }
 
   runtime {
