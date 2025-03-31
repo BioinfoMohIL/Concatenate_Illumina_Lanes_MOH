@@ -60,8 +60,18 @@ task cat_lanes {
 
     cat ~{read1_lane1} ~{read1_lane2} ~{read1_lane3} ~{read1_lane4} > "~{samplename}_merged_R1.fastq.gz"
 
+    # Fetch the file size in MB
+    fwd_file_size=$(stat -c%s "~{samplename}_merged_R1.fastq.gz")
+    fwd_file_size_mb=$(awk -v size="$fwd_file_size" 'BEGIN {printf "%.2f", size / (1024*1024)}')
+    echo "$fwd_file_size_mb" > fwd_size.txt
+        
     if exists "~{read2_lane1}" ; then
       cat ~{read2_lane1} ~{read2_lane2} ~{read2_lane3} ~{read2_lane4} > "~{samplename}_merged_R2.fastq.gz"
+    
+      # Fetch the file size in MB
+      rev_file_size=$(stat -c%s "~{samplename}_merged_R2.fastq.gz")
+      rev_file_size_mb=$(awk -v size="$rev_file_size" 'BEGIN {printf "%.2f", size / (1024*1024)}')
+      echo "$rev_file_size_mb" > rev_size.txt
     fi
 
     # ensure newly merged FASTQs are valid gzipped format
@@ -70,7 +80,11 @@ task cat_lanes {
   output {
     File read1_concatenated = "~{samplename}_merged_R1.fastq.gz"
     File? read2_concatenated = "~{samplename}_merged_R2.fastq.gz"
+    
+    Float fwd_file_size = read_float("fwd_size.txt")
+    Float rev_file_size = read_float("rev_size.txt")
   }
+
   runtime {
     docker: "~{docker}"
     memory: memory + " GB"
@@ -118,5 +132,9 @@ workflow concatenate_illumina_lanes {
 
     File read1 = cat_lanes.read1_concatenated
     File? read2 = cat_lanes.read2_concatenated
+
+    Float read1_file_size_MB = cat_lanes.fwd_file_size
+    Float read2_file_size_MB = cat_lanes.rev_file_size
+    
   }
 }
