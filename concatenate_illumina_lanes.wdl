@@ -133,8 +133,8 @@ workflow concatenate_illumina_lanes {
     File read1 = cat_lanes.read1_concatenated
     File? read2 = cat_lanes.read2_concatenated
 
-    Float read1_file_size_MB = cat_lanes.fwd_file_size
-    Float read2_file_size_MB = cat_lanes.rev_file_size
+    Float read1_file_size_mb = cat_lanes.fwd_file_size
+    Float read2_file_size_mb = cat_lanes.rev_file_size
     
   }
 }
